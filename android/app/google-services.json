@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1029156747828",
+    "project_id": "todolisttoday-2cfe1",
+    "storage_bucket": "todolisttoday-2cfe1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029156747828:android:321774ecdea48d0565e861",
+        "android_client_info": {
+          "package_name": "com.example.tododay"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBS9o2Jd3zruoc1Ld_bg5isDXypbhzgKUE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
