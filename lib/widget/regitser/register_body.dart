@@ -1,8 +1,11 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:tododay/screens/todolisttoday_screen.dart';
+import 'package:tododay/servise/models/userProvider.dart';
 import 'package:tododay/widget/custom_btn.dart';
 import 'package:tododay/widget/custom_fieldtext.dart';
 import 'package:tododay/widget/main/dialog_alert.dart';
@@ -26,8 +29,12 @@ class _RegisterBodyState extends State<RegisterBody> {
   bool isLoading = false;
 
   final _auth = FirebaseAuth.instance;
+  final firestore = FirebaseFirestore.instance;
   late User user;
+
   Widget build(BuildContext context) {
+    Userprovider userprovider = Provider.of<Userprovider>(context);
+
     if (isLoading) {
       return Myloading();
     }
@@ -50,27 +57,8 @@ class _RegisterBodyState extends State<RegisterBody> {
             child: Column(
               spacing: 40,
               children: [
-                // CustomTextField(
-                //   icon: Icon(Icons.person),
-                //   type: TextInputType.text,
-                //   text: 'الاسم الاول',
-                //   hint: 'محمد',
-                //   obscure: false,
-                //   onChanged: (value) {
-                //     print(value);
-                //   },
-                // ),
-                // CustomTextField(
-                //   icon: Icon(Icons.family_restroom),
-                //   type: TextInputType.text,
-                //   text: 'الاسم الثاني',
-                //   hint: 'حنفي',
-                //   obscure: false,
-                //   onChanged: (value) {
-                //     print(value);
-                //   },
-                // ),
                 CustomTextField(
+                  maxline: 1,
                   icon: Icon(Icons.email),
                   type: TextInputType.streetAddress,
                   state: emailisGood,
@@ -84,6 +72,7 @@ class _RegisterBodyState extends State<RegisterBody> {
                 ),
 
                 CustomTextField(
+                  maxline: 1,
                   icon: Icon(Icons.security),
                   type: TextInputType.visiblePassword,
                   state: passwordisGood,
@@ -96,6 +85,7 @@ class _RegisterBodyState extends State<RegisterBody> {
                   },
                 ),
                 CustomTextField(
+                  maxline: 1,
                   icon: Icon(Icons.security),
                   type: TextInputType.visiblePassword,
                   state: ConfirmpasswordisGood,
@@ -170,6 +160,18 @@ class _RegisterBodyState extends State<RegisterBody> {
                                 password: password,
                               );
                           print("user => ${user}");
+                          userprovider.user = user.user;
+
+                          userprovider.use();
+                          await firestore
+                              .collection("todolist")
+                              .doc("${_auth.currentUser?.uid}")
+                              .set({
+                                "createdAt": FieldValue.serverTimestamp(),
+                                "user": {email},
+                                "tasks": {},
+                              });
+
                           QuickAlert.show(
                             context: context,
                             type: QuickAlertType.success,

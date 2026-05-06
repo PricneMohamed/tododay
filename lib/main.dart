@@ -1,16 +1,20 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:tododay/screens/welcome_screen.dart';
 import 'package:tododay/screens/register_screen.dart';
 import 'package:tododay/screens/login_screen.dart';
 import 'package:tododay/screens/todolisttoday_screen.dart';
+import 'package:tododay/servise/models/userProvider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(create: (context) => Userprovider(), child: MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -56,6 +60,13 @@ class MyApp extends StatelessWidget {
                 color: Colors.black87,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
+              ),
+            )
+            .copyWith(
+              bodyMedium: GoogleFonts.tajawal(
+                color: Colors.black87,
+                fontWeight: FontWeight.bold,
+                fontSize: 25,
               ),
             ),
       ),

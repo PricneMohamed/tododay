@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:tododay/screens/todolisttoday_screen.dart';
+import 'package:tododay/servise/models/userProvider.dart';
 import 'package:tododay/widget/custom_btn.dart';
 import 'package:tododay/widget/custom_fieldtext.dart';
 import 'package:tododay/widget/main/myloading.dart';
@@ -17,7 +20,7 @@ class LoginBody extends StatefulWidget {
 class _LoginBodyState extends State<LoginBody> {
   @override
   final _auth = FirebaseAuth.instance;
-
+  final firestore = FirebaseFirestore.instance;
   String email = "";
   bool emailisGood = true;
   String password = "";
@@ -27,6 +30,8 @@ class _LoginBodyState extends State<LoginBody> {
   Widget build(BuildContext context) {
     String email = "";
     String password = "";
+
+    Userprovider userprovider = Provider.of<Userprovider>(context);
 
     if (isLoading) {
       return Myloading();
@@ -46,6 +51,7 @@ class _LoginBodyState extends State<LoginBody> {
             ),
           ),
           CustomTextField(
+            maxline: 1,
             icon: Icon(Icons.email),
             type: TextInputType.emailAddress,
             state: emailisGood,
@@ -57,6 +63,7 @@ class _LoginBodyState extends State<LoginBody> {
             },
           ),
           CustomTextField(
+            maxline: 1,
             icon: Icon(Icons.security),
             type: TextInputType.visiblePassword,
             state: passwordisGood,
@@ -71,6 +78,7 @@ class _LoginBodyState extends State<LoginBody> {
             onPressed: () async {
               try {
                 setState(() {
+                  isLoading = true;
                   if (!email.contains('@') || !email.contains(".")) {
                     emailisGood = false;
                     QuickAlert.show(
@@ -100,6 +108,9 @@ class _LoginBodyState extends State<LoginBody> {
                   email: email,
                   password: password,
                 );
+                userprovider.user = user.user;
+
+                userprovider.use();
 
                 QuickAlert.show(
                   context: context,
@@ -111,7 +122,6 @@ class _LoginBodyState extends State<LoginBody> {
                 Navigator.of(
                   context,
                 ).pushNamed(TodolisttodayScreen.screenRoute);
-                
               } on FirebaseException catch (err) {
                 String message = "";
 
@@ -134,6 +144,10 @@ class _LoginBodyState extends State<LoginBody> {
                   text: message,
                 );
                 return;
+              } finally {
+                setState(() {
+                  isLoading = false;
+                });
               }
             },
             color: Colors.teal,
