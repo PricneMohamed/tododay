@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tododay/utils/constant.dart';
 
 class mydrawer extends StatelessWidget {
-  const mydrawer({
-    super.key,
-    required this.currentUser,
-  });
+  const mydrawer({super.key, required this.currentUser});
 
   final User? currentUser;
 
@@ -27,7 +24,9 @@ class mydrawer extends StatelessWidget {
           ),
           ...pages.entries.map((value) {
             return ListTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pushNamed(value.value['route']);
+              },
               title: Text(
                 value.value['name'],
                 style: Theme.of(context).textTheme.headlineMedium,

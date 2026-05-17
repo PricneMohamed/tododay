@@ -21,7 +21,7 @@ class WelcomeBody extends StatelessWidget {
           color: Colors.teal,
           text: RegisterScreen.screenName,
           textColor: Colors.white,
-          icon: Icon(Icons.run_circle, size: 30),
+          icon: Icon(Icons.person_add_alt_1, size: 30),
         ),
         CustomBtn(
           onPressed: () {

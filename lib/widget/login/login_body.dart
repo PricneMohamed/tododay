@@ -69,7 +69,7 @@ class _LoginBodyState extends State<LoginBody> {
             state: passwordisGood,
             text: "Password",
             hint: "***********",
-            obscure: false,
+            obscure: true,
             onChanged: (value) {
               password = value;
             },
@@ -86,6 +86,8 @@ class _LoginBodyState extends State<LoginBody> {
                       type: QuickAlertType.error,
                       title: 'بريد إلكتروني غير صالح',
                       text: 'تأكد من كتابة البريد الإلكتروني بشكل صحيح.',
+                      confirmBtnText: "تمام",
+                      cancelBtnText: "كنسل",
                     );
                     return;
                   } else {
@@ -97,6 +99,8 @@ class _LoginBodyState extends State<LoginBody> {
                       type: QuickAlertType.warning,
                       title: 'كلمة المرور ضعيفة',
                       text: 'يجب أن تكون كلمة المرور 6 أحرف على الأقل.',
+                      confirmBtnText: "تمام",
+                      cancelBtnText: "كنسل",
                     );
                     return;
                   } else {
@@ -117,6 +121,8 @@ class _LoginBodyState extends State<LoginBody> {
                   type: QuickAlertType.success,
                   title: 'مرحبًا 👋',
                   text: 'أهلاً بيك، تم تسجيل الدخول بنجاح 🎉',
+                  confirmBtnText: "تمام",
+                  cancelBtnText: "كنسل",
                 );
 
                 Navigator.of(
@@ -142,6 +148,8 @@ class _LoginBodyState extends State<LoginBody> {
                   type: QuickAlertType.error,
                   title: 'Oops...',
                   text: message,
+                  confirmBtnText: "تمام",
+                  cancelBtnText: "كنسل",
                 );
                 return;
               } finally {

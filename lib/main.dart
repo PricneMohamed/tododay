@@ -6,6 +6,7 @@ import 'package:tododay/screens/welcome_screen.dart';
 import 'package:tododay/screens/register_screen.dart';
 import 'package:tododay/screens/login_screen.dart';
 import 'package:tododay/screens/todolisttoday_screen.dart';
+import 'package:tododay/screens/profile_screen.dart';
 import 'package:tododay/servise/models/userProvider.dart';
 
 void main() async {
@@ -78,6 +79,7 @@ class MyApp extends StatelessWidget {
         RegisterScreen.screenRoute: (ctx) => RegisterScreen(),
         LoginScreen.screenRoute: (ctx) => LoginScreen(),
         TodolisttodayScreen.screenRoute: (ctx) => TodolisttodayScreen(),
+        ProfileScreen.screenRoute: (ctx) => ProfileScreen(),
       },
     );
   }

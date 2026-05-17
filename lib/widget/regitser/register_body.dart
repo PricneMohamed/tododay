@@ -1,4 +1,3 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,6 @@ import 'package:tododay/screens/todolisttoday_screen.dart';
 import 'package:tododay/servise/models/userProvider.dart';
 import 'package:tododay/widget/custom_btn.dart';
 import 'package:tododay/widget/custom_fieldtext.dart';
-import 'package:tododay/widget/main/dialog_alert.dart';
 import 'package:tododay/widget/main/myloading.dart';
 
 class RegisterBody extends StatefulWidget {
@@ -99,114 +97,132 @@ class _RegisterBodyState extends State<RegisterBody> {
                   },
                 ),
                 CustomBtn(
-                  onPressed: () {
-                    setState(() async {
-                      isLoading = true;
-                      if (!email.contains("@") || !email.contains(".")) {
-                        QuickAlert.show(
-                          context: context,
-                          type: QuickAlertType.error,
-                          title: 'بريد إلكتروني غير صالح',
-                          text: 'تأكد من كتابة البريد الإلكتروني بشكل صحيح.',
-                        );
-                        return;
-                      } else {
+                  onPressed: () async {
+                    if (!email.contains("@") || !email.contains(".")) {
+                      QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.error,
+                        title: 'بريد إلكتروني غير صالح',
+                        text: 'تأكد من كتابة البريد الإلكتروني بشكل صحيح.',
+                        confirmBtnText: "تمام",
+                        cancelBtnText: "كنسل",
+                      );
+                      return;
+                    } else {
+                      setState(() {
                         emailisGood = true;
-                      }
-                      if (password.length < 6) {
-                        QuickAlert.show(
-                          context: context,
-                          type: QuickAlertType.warning,
-                          title: 'كلمة المرور ضعيفة',
-                          text: 'يجب أن تكون كلمة المرور 6 أحرف على الأقل.',
-                        );
-                        return;
-                      } else {
+                      });
+                    }
+                    if (password.length < 6) {
+                      QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.warning,
+                        title: 'كلمة المرور ضعيفة',
+                        text: 'يجب أن تكون كلمة المرور 6 أحرف على الأقل.',
+                        confirmBtnText: "تمام",
+                        cancelBtnText: "كنسل",
+                      );
+                      return;
+                    } else {
+                      setState(() {
                         passwordisGood = true;
-                      }
-                      if (Confirmpassword.isEmpty) {
+                      });
+                    }
+                    if (Confirmpassword.isEmpty) {
+                      setState(() {
                         ConfirmpasswordisGood = false;
+                      });
+                      QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.warning,
+                        title: 'حقل مطلوب',
+                        text: 'من فضلك أدخل تأكيد كلمة المرور.',
+                        confirmBtnText: "تمام",
+                        cancelBtnText: "كنسل",
+                        confirmBtnColor: Colors.teal,
+                      );
+                      return;
+                    } else {
+                      setState(() {
+                        ConfirmpasswordisGood = true;
+                      });
+                    }
+
+                    if (password != Confirmpassword) {
+                      QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.error,
+                        title: 'خد بالك 😊',
+                        text: 'كلمة المرور مش زي التأكيد، راجعهم تاني.',
+                        confirmBtnText: "تمام",
+                        cancelBtnText: "كنسل",
+                        confirmBtnColor: Colors.teal,
+                      );
+                      return;
+                    }
+                    if (emailisGood &&
+                        passwordisGood &&
+                        ConfirmpasswordisGood) {
+                      try {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        final user = await _auth.createUserWithEmailAndPassword(
+                          email: email,
+                          password: password,
+                        );
+                        print("user => ${user}");
+                        userprovider.user = user.user;
+
+                        userprovider.use();
+                        await firestore
+                            .collection("todolist")
+                            .doc("${_auth.currentUser?.uid}")
+                            .set({
+                              "createdAt": FieldValue.serverTimestamp(),
+                              "user": {email},
+                              "tasks": [],
+                            });
+
                         QuickAlert.show(
                           context: context,
-                          type: QuickAlertType.warning,
-                          title: 'حقل مطلوب',
-                          text: 'من فضلك أدخل تأكيد كلمة المرور.',
+                          type: QuickAlertType.success,
+                          title: 'تم بنجاح 🎉',
+                          text:
+                              'تم إنشاء الحساب بنجاح، يمكنك تسجيل الدخول الآن.',
                           confirmBtnText: "تمام",
+                          cancelBtnText: "كنسل",
                           confirmBtnColor: Colors.teal,
                         );
-                        return;
-                      } else {
-                        ConfirmpasswordisGood = true;
-                      }
 
-                      if (password != Confirmpassword) {
+                        Navigator.of(
+                          context,
+                        ).pushNamed(TodolisttodayScreen.screenRoute);
+                      } on FirebaseException catch (e) {
+                        String message = "";
+                        if (e.code == 'email-already-in-use') {
+                          message = 'البريد الإلكتروني مستخدم بالفعل.';
+                        } else if (e.code == 'weak-password') {
+                          message = 'كلمة المرور ضعيفة جدًا.';
+                        } else if (e.code == 'invalid-email') {
+                          message = 'البريد الإلكتروني غير صالح.';
+                        } else {
+                          message = 'حدث خطأ، حاول مرة أخرى.';
+                        }
                         QuickAlert.show(
                           context: context,
                           type: QuickAlertType.error,
-                          title: 'خد بالك 😊',
-                          text: 'كلمة المرور مش زي التأكيد، راجعهم تاني.',
+                          title: 'Oops...',
+                          text: '$message',
                           confirmBtnText: "تمام",
-                          confirmBtnColor: Colors.teal,
+                          cancelBtnText: "كنسل",
                         );
-                        return;
-                      }
-                      if (emailisGood &&
-                          passwordisGood &&
-                          ConfirmpasswordisGood) {
-                        try {
-                          final user = await _auth
-                              .createUserWithEmailAndPassword(
-                                email: email,
-                                password: password,
-                              );
-                          print("user => ${user}");
-                          userprovider.user = user.user;
-
-                          userprovider.use();
-                          await firestore
-                              .collection("todolist")
-                              .doc("${_auth.currentUser?.uid}")
-                              .set({
-                                "createdAt": FieldValue.serverTimestamp(),
-                                "user": {email},
-                                "tasks": {},
-                              });
-
-                          QuickAlert.show(
-                            context: context,
-                            type: QuickAlertType.success,
-                            title: 'تم بنجاح 🎉',
-                            text:
-                                'تم إنشاء الحساب بنجاح، يمكنك تسجيل الدخول الآن.',
-                            confirmBtnText: "تمام",
-                            confirmBtnColor: Colors.teal,
-                          );
-
-                          Navigator.of(
-                            context,
-                          ).pushNamed(TodolisttodayScreen.screenRoute);
-                        } on FirebaseException catch (e) {
-                          String message = "";
-                          if (e.code == 'email-already-in-use') {
-                            message = 'البريد الإلكتروني مستخدم بالفعل.';
-                          } else if (e.code == 'weak-password') {
-                            message = 'كلمة المرور ضعيفة جدًا.';
-                          } else if (e.code == 'invalid-email') {
-                            message = 'البريد الإلكتروني غير صالح.';
-                          } else {
-                            message = 'حدث خطأ، حاول مرة أخرى.';
-                          }
-                          QuickAlert.show(
-                            context: context,
-                            type: QuickAlertType.error,
-                            title: 'Oops...',
-                            text: '$message',
-                          );
-                        } finally {
+                      } finally {
+                        setState(() {
                           isLoading = false;
-                        }
+                        });
                       }
-                    });
+                    }
                   },
                   color: Colors.teal,
                   text: "انشاء حساب",

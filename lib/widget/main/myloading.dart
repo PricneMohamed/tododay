@@ -10,7 +10,7 @@ class Myloading extends StatelessWidget {
       body: Center(
         child: LoadingAnimationWidget.dotsTriangle(
           color: Colors.teal,
-          size: 200,
+          size: 100,
         ),
       ),
     );

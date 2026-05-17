@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatelessWidget {
   CustomTextField({
     super.key,
+    this.controller,
     required this.maxline,
     required this.icon,
     required this.type,
@@ -13,6 +14,7 @@ class CustomTextField extends StatelessWidget {
     required this.onChanged,
   });
 
+  final TextEditingController? controller;
   dynamic maxline;
   Icon icon;
   TextInputType type;
@@ -25,6 +27,7 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: controller,
       maxLines: maxline,
       onChanged: onChanged,
       keyboardType: type,

@@ -9,7 +9,7 @@ class LoginScreen extends StatelessWidget {
 
   @override
   static const screenRoute = "/login";
-  static const screenName = "نورتنا من تاني";
+  static const screenName = "نورتنا من جديد";
 
   Widget build(BuildContext context) {
     return Scaffold(appBar: CustomAppBar(context), body: LoginBody());
